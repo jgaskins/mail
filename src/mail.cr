@@ -42,6 +42,11 @@ module Mail
     end
 
     def send(message : Message) : Nil
+      # Retry in the case of a long-lived socket getting disconnected.
+      retry 3 { send! message }
+    end
+
+    private def send!(message : Message) : Nil
       @connections.checkout do |smtp|
         smtp.mail_from address_for(message.from)
         unless (response = smtp.read_response).starts_with? "250"
@@ -80,6 +85,18 @@ module Mail
         smtp.close
         raise ex
       end
+    end
+
+    private def retry(times : Int, &)
+      error = nil
+      times.times do
+        return yield
+      rescue ex : IO::Error
+        error = ex
+      end
+
+      # If we get here, we've definitely encountered at least one error
+      raise error.not_nil!
     end
 
     private def address_for(recipient : String)

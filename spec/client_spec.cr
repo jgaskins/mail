@@ -19,7 +19,8 @@ describe Mail::Client do
   # TEST_EMAIL_ATTACHMENT_CONTENT_TYPE=image/png
   #
   # NOTE: This does not guarantee delivery. This test only validates that your
-  # SMTP server does not reject the email.
+  # SMTP server does not reject the email. A sender cannot guarantee that the
+  # message is delivered to the recipient.
   if ENV["SEND_TEST_EMAIL"]?
     mail = Mail::Client.new ENV["SMTP_SERVER"], 587,
       domain: ENV["SMTP_DOMAIN"],
