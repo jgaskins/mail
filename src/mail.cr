@@ -112,7 +112,7 @@ module Mail
         @auth,
         @log,
       )
-        log.debug &.emit "Connecting", host: host, port: port, domain: domain
+        log.trace &.emit "Connecting", host: host, port: port, domain: domain
         @socket = TCPSocket.new(host, port)
         if tls.smtps?
           @socket = OpenSSL::SSL::Socket::Client.new @socket, sync_close: true
@@ -152,7 +152,7 @@ module Mail
         yield Data.new(@socket)
         @socket << "\r\n.\r\n"
         @socket.flush
-        @log.debug &.emit "Sent data"
+        @log.trace &.emit "Sent data"
         unless (response = read_response).starts_with? '2'
           raise SMTP::Error.new("Unexpected response from DATA: #{response}")
         end
@@ -183,7 +183,7 @@ module Mail
       end
 
       protected def send(command : String) : Nil
-        @log.debug &.emit ">>>", command: command
+        @log.trace &.emit ">>>", command: command
         @socket.puts command
         @socket.flush
       end
@@ -200,7 +200,7 @@ module Mail
 
       protected def read_response : String
         response = socket.read_line
-        @log.debug &.emit "<<<", command: response
+        @log.trace &.emit "<<<", command: response
 
         code = response[0...3].to_i
         raise SMTP::Error.new(response) if code >= 400
