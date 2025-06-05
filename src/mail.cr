@@ -306,7 +306,7 @@ module Mail
         new :text, body
       end
 
-      def self.html
+      def self.html(body)
         new :html, body
       end
 
