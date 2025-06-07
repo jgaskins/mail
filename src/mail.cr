@@ -70,7 +70,13 @@ module Mail
             message.cc_header io
             # We don't add BCC headers. There should be no evidence in the
             # message of who is in BCC.
-            io.puts "Subject: #{message.subject}"
+
+            if subject = message.subject
+              unless subject.ascii_only?
+                subject = Utils.b64_encode(subject)
+              end
+              io.puts "Subject: #{subject}"
+            end
             io.puts "Content-Type: #{mime.content_type}"
             io.puts
 
@@ -416,9 +422,7 @@ module Mail
         if name.ascii_only?
           name.inspect io
         else
-          io << "=?UTF-8?B?"
-          Base64.strict_encode name, io
-          io << "?="
+          Utils.b64_encode name, io
         end
 
         io << " <" << address << '>'
@@ -431,6 +435,20 @@ module Mail
 
   alias Headers = HTTP::Headers
   alias Party = Message::Party
+
+  module Utils
+    extend self
+
+    def b64_encode(string : String)
+      String.build { |str| b64_encode string, to: str }
+    end
+
+    def b64_encode(string : String, to io : IO)
+      io << "=?UTF-8?B?"
+      Base64.strict_encode string, io
+      io << "?="
+    end
+  end
 
   module Auth
     abstract struct Method
