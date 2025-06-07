@@ -53,13 +53,13 @@ Note that `to`, `cc`, and `bcc` are arrays, even when there is a single recipien
 
 ### Personalizing sender and recipients
 
-The sending party and all receiving parties (`to`, `cc`, and `bcc`) can either be `String`s or `Mail::Message::Party` instances. The purpose of a `Mail::Message::Party` is to provide both a human-readable name for the mail client to display as well as an email address.
+The sending party and all receiving parties (`to`, `cc`, and `bcc`) can either be `String`s or `Mail::Party` instances. The purpose of a `Mail::Party` is to provide both a human-readable name for the mail client to display as well as an email address.
 
 ```crystal
 MAIL.send Mail::Message.new(
-  from: Mail::Message::Party.new(name: "Admin", address: "admin@example.com"),
+  from: Mail::Party.new(name: "Admin", address: "admin@example.com"),
   to: [
-    Mail::Message::Party.new(name: "Example User", address: "user@example.com"),
+    Mail::Party.new(name: "Example User", address: "user@example.com"),
   ],
   # ...
 )

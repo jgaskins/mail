@@ -430,6 +430,7 @@ module Mail
   end
 
   alias Headers = HTTP::Headers
+  alias Party = Message::Party
 
   module Auth
     abstract struct Method
